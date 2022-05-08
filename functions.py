@@ -137,11 +137,11 @@ def add_courses(chat: str = "herkesicinudemy", bot: str = "herkesicinudemy_bot")
 
 
 
-def course_sender(app: pyrogram.Client, chat: str = "herkesicinudemy", bot: str = "herkesicinudemy_bot", links: list = None, is_async: bool = True):
+def course_sender(app: pyrogram.Client, chat: str = "herkesicinudemy", bot: str = "herkesicinudemy_bot", links: list = None, return_scheme: bool = False):
         if not links:
             links = get_courses()
         
-        if not is_async:
+        with app:
             date = datetime.now()
             start_message = f"{date.day} {months[date.month-1]} {date.year} tarihine ait ücretsiz eğitimler birazdan paylaşılmaya başlanacaktır.\n\nKurslardan bazıları ücretli olabilir, kontrol edin.\n\n**@herkesicinudemy | @herkesicinegitim**"
             app.send_message(chat, text=start_message)
@@ -152,10 +152,10 @@ def course_sender(app: pyrogram.Client, chat: str = "herkesicinudemy", bot: str 
                 desen = pattern_creator(*get_informations(link, "title", "desc", "rating", options=1), url=link, language="İngilizce")
                 app.send_message(chat, text=desen)
                 time.sleep(4)
-        else:
+        if return_scheme:
             scheme = ""
             for i, link in enumerate(links):
-                title, description, rating, instructor = get_informations(link)
+                title, description, url, rating, instructor = get_informations(link)
                 scheme += f"**[{i+1}. {title}]({link})**\n\n"
             scheme += f"__Made with Python by @theliec__\n\n@{chat}\n@{bot}"
 
